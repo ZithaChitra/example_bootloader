@@ -1,0 +1,59 @@
+rm bootloader.bin && nasm bootloader.asm -f bin -o bootloader.bin && qemu-system-x86_64 -drive format=raw,media=disk,file=bootloader.bin
+
+# Experimenting with c compilation
+gcc -ffreestanding -c functions.c -o functions.o -m32
+objdump -M intel -d functions.o
+
+# Building kernel binary image
+# -----------------------------
+
+
+# (Compile for 32-bit architecture)
+clear; gcc -ffreestanding -c kernel.c -o kernel.o -m32
+ghex kernel.o
+
+# Use the linker to format intermediate object file into raw 32-bit binary
+ld -o kernel.bin -Ttext 0x7e00 kernel.o -m elf_i386 --oformat binary
+ghex kernel.bin
+
+
+# Building our OS disk image (bootsector + kernel)
+# ------------------------------------------------
+
+# Assembly our bootsector
+clear; nasm bootloader.asm -f bin -o bootloader.bin
+
+# Create raw binary disk image, simply by concatinating our bootsector and kernel binary
+cat bootloader.bin kernel.bin > os_image.bin
+
+# Pad (yes, truncate can both pad and truncate) our image to ensure whole
+# sectors can be ready in qemu ( here 20 x 512 sectors)
+truncate os_image.bin -s 10240
+
+# Boot the (emulated) machine with our os image file.
+qemu-system-x86_64 os_image.bin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
