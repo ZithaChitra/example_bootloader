@@ -2,8 +2,9 @@
 ; things look like when you write asm code is 
 ; not always how the computer works underneath - Nick Blundell 
 
-mov bx, 0x7c0
-mov ds, bx
+[org 0x7c00]
+
+mov [0x40], word 0x0
 
 
 mov ah, 0x0e ; BIOS scrolling teletype function 
@@ -18,3 +19,4 @@ jmp $ ; endless jump
 
 times 510 - ($ - $$) db 0
 dw 0xaa55
+  
