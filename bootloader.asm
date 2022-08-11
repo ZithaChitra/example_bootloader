@@ -1,19 +1,18 @@
+; firstly, don't be too hard on yourself while learnig this stuff.
 ; what you'll find in asm is that what 
 ; things look like when you write asm code is 
 ; not always how the computer works underneath - Nick Blundell 
 
 [org 0x7c00]
 
-mov [0x40], word 0x0
-
-
 mov ah, 0x0e ; BIOS scrolling teletype function 
+mov al, 'A'
 
-mov al, [my_character]
-int 0x10
-
-my_character:
-    db "H"
+loop:
+    int 0x10
+    add al, 1
+    cmp al, 'Z'
+    jle loop
 
 jmp $ ; endless jump
 
