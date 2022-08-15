@@ -61,3 +61,33 @@ HEX_TEMPLATE:
 
 HEXABET:
     db '0123456789abcdef'
+
+
+
+read_from_disk:
+
+    mov ah, 0x02    ; read sector from disk
+
+    mov al, 1               ; sectors to read
+    mov ch, 0               ; select first cylinder/track to read from 
+    mov dh, 0               ; select first read/write head
+    mov cl, 2               ; select second sector, sector after bios
+
+    mov bx, 0
+    mov es, bx              ; es -> 0
+    mov bx, 0x7c00 + 512    ; where to load the sector in memory
+    
+    int 0x13
+
+    jc read_error           ; jump to err message if carry flag is set
+
+    ret
+
+
+read_error:
+    mov si, DISK_ERROR
+    call print_string
+    jmp $
+
+DISK_ERROR:
+    db "Error reading disk", 0
