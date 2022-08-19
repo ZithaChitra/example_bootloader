@@ -6,16 +6,16 @@
 ; switch to protected mode.
 switch_to_pm:
 
-    cli                         ; we must switch of inturrupts until we have
+    cli                         ; we must switch off inturrupts until we have
                                 ; set up the protected mode inturrupt vector
                                 ; otherwise interrupts will run amuck
 
 
-;    lgdt [gdt_descriptor]       ; Load our global descriptor table which defines    
+    lgdt [gdt_descriptor]       ; Load our global descriptor table which defines    
                                 ; the protected mode segments (e.g for code and data)
 
-    mov eax, cr0
-    or eax, 0x1
+    mov eax, cr0                ; To make the switch to protected mode, we set 
+    or eax, 0x1                 ; the first bit of CR0, a special CPU control rgister 
     mov cr0, eax
 
 

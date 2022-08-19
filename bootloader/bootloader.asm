@@ -9,16 +9,22 @@
 mov bp, 0xffff
 mov sp, bp
 
+
+; set vga to be normal mode
+mov ax, 0x3
+int 0x10
+
 mov si, MSG_REAL_MODE
 call print_string
 
 ; Switch into 32 bit protected mode.
+call switch_to_pm
 
 jmp $ ; endless jump
 
-%include "my_functions.asm"
-%include "switch_to_pm.asm"
-%include "my_pm_functions.asm"
+%include "functions/my_functions.asm"
+%include "functions/switch_to_pm.asm"
+%include "functions/my_pm_functions.asm"
 
 [bits 32]
 
@@ -27,6 +33,7 @@ BEGIN_PM:
     ; 0xb8000 - video memory buffer
     mov esi, MSG_PROT_MODE
     call print_string_pm
+    
     jmp $
 
 
