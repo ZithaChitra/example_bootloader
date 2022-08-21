@@ -65,22 +65,28 @@ HEXABET:
 
 
 read_from_disk:
+    pusha
 
-    mov ah, 0x02    ; read sector from disk
+    mov ah, 0x02                ; read sector from disk
 
-    mov al, 1               ; sectors to read
-    mov ch, 0               ; select first cylinder/track to read from 
-    mov dh, 0               ; select first read/write head
-    mov cl, 2               ; select second sector, sector after bios
+    ; mov al, 1                 ; sectors to read. Comment out 
+                                ; so caller can set as an argument
+    mov ch, 0                   ; select first cylinder/track to read from 
+    mov dh, 0                   ; select first read/write head
+    mov cl, 2                   ; select second sector, sector after bios
 
+    push bx
     mov bx, 0
-    mov es, bx              ; es -> 0
-    mov bx, 0x7c00 + 512    ; where to load the sector in memory
+    mov es, bx                  ; es -> 0
+    pop bx
+    ; mov bx, 0x7c00 + 512      ; where to load the sector in memory. Comment out 
+                                ; so caller can set as an argument 
     
     int 0x13
 
-    jc read_error           ; jump to err message if carry flag is set
+    jc read_error               ; jump to err message if carry flag is set
 
+    popa
     ret
 
 
