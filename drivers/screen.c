@@ -1,7 +1,7 @@
 // screen driver "implementation" file
 
 #include "screen.h"
-
+#include "kernel/low_level.h"
 
 // print char on screen at col, row, or at cursor position
 void
@@ -44,5 +44,127 @@ print_char(char character, int col, int row, char attribute_byte)
     offset = handle_scrolling(offset);
     // update the cursor position on the screen device
     set_cursor(offset);
+    return;
 
 }
+
+int
+get_screen_offset(int col, int row)
+{
+    // TODO
+    // This is similar to get_cursor, only now we write
+    // bytes to those internal device registers.
+    // port_byte_out(REG_SCREEN_CTRL, 14);
+    // port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
+    // port_byte_out(REG_SCREEN_CTRL, 15);
+}
+
+
+int
+get_cursor()
+{
+    // The device uses it's control register as an index
+    // to select it's internal registers, of which we are
+    // interested in.
+    // reg 14: which is the high byte of the cursor 's offset
+    // reg 15: which is the low byte of the cursor's offset
+    // Once the internal register has been selected, we may read or 
+    // write a byte on the data register.
+    port_byte_out(REG_SCREEN_CTRL, 14);
+    int offset = port_byte_in(REG_SCREEN_DATA) << 8;
+    port_byte_out(REG_SCREEN_CTRL, 15);
+    offset += port_byte_in(REG_SCREEN_DATA);
+    // Since the character offset reported by the VGA hardware is the
+    // number of characters, we multiply by two to convert it to 
+    // a character cell offset.
+    return offset * 2;
+}
+
+
+
+void
+set_cursor(int offset)
+{
+    offset /= 2;    // Convert from cell offset to char offset
+    // TODO
+    // This is similar to get_cursor, only now we write 
+    // bytes to those internal device registers
+    return;
+}
+
+
+void
+print_at(char* message, int col, int row)
+{
+    // update the cursor if row and col not negative
+    if(col >= 0 && row >= 0){
+        set_cursor(get_screen_offset(col, row));
+    }
+    // Loop through each char of the message and print it.
+    int i = 0;
+    while(message[i] != 0){
+        print_char(message[i++], col, row, WHITE_ON_BLACK);
+    }
+    return;
+}
+
+
+
+void 
+print(char* message)
+{
+    print_at(message, -1, -1);
+}
+
+
+void // clears screebn by writing blank characters at every position
+clear_screen()
+{
+    int row = 0;
+    int col = 0;
+
+    /* Loop through video memory and write blank characters */
+    for(row=0; row < MAX_ROWS; row++){
+        for(col=0; col < MAX_COLS; col++){
+            print_char(' ', col, row, WHITE_ON_BLACK);
+        }
+    }
+
+    // Move cursor back to the top left
+    set_cursor(get_screen_offset(0, 0));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
