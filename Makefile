@@ -2,6 +2,9 @@
 
 all: os_image.bin
 
+run: all
+	qemu-system-x86_64 -drive format=raw,media=disk,file=os_image.bin 
+
 
 os_image.bin: boot_sector.bin kernel.bin
 	cat $^ > $@
@@ -17,7 +20,7 @@ kernel.o:
 
 # build the kernel entry object file
 boot_sector.bin:
-	nasm boot/boot_sector.asm -f bin -o boot_sector.bin
+	nasm ./boot/boot_sector.asm -f bin -o boot_sector.bin
 
 
 clean:

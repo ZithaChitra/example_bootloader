@@ -1,7 +1,7 @@
 [bits 16] ;instruct nasm to output 16 bit opcodes
 
 ; include prepared global descriptor table structure
-%include "gdt.asm"
+%include "boot/gdt.asm"
 
 ; switch to protected mode.
 switch_to_pm:
