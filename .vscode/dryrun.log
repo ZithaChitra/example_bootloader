@@ -1,0 +1,21 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/northp/Documents/projects/vscode/example_bootloader'
+gcc -ffreestanding -c kernel/kernel_entry.c -o kernel/kernel_entry.o
+gcc -ffreestanding -c kernel/low_level.c -o kernel/low_level.o
+gcc -ffreestanding -c kernel/util.c -o kernel/util.o
+gcc -ffreestanding -c drivers/screen.c -o drivers/screen.o
+make: Leaving directory '/home/northp/Documents/projects/vscode/example_bootloader'
+ 
+Makefile:33: warning: overriding recipe for target 'kernel.bin'
+Makefile:3: warning: ignoring old recipe for target 'kernel.bin'
+Makefile:37: warning: overriding recipe for target 'kernel.o'
+Makefile:7: warning: ignoring old recipe for target 'kernel.o'
+Makefile:42: warning: overriding recipe for target 'kernel_entry.o'
+Makefile:11: warning: ignoring old recipe for target 'kernel_entry.o'
+Makefile:70: warning: overriding recipe for target 'run'
+Makefile:24: warning: ignoring old recipe for target 'run'
+Makefile:79: warning: overriding recipe for target 'kernel.bin'
+Makefile:33: warning: ignoring old recipe for target 'kernel.bin'
+make: *** No rule to make target 'kernel_entry.asm', needed by 'kernel_entry.o'.
+make: *** No rule to make target 'kernel.c', needed by 'kernel.o'.
+
