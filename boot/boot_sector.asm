@@ -11,8 +11,8 @@ mov sp, bp
 
 
 ; set vga to be normal mode
-; mov ax, 0x3
-; int 0x10
+mov ax, 0x3
+int 0x10
 
 mov si, MSG_REAL_MODE
 call print_string
