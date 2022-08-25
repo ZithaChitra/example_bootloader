@@ -1,8 +1,9 @@
 // screen driver "implementation" file
 
 #include "screen.h"
-#include "kernel/low_level.h"
-#include "kernel/util.h"
+#include "../kernel/low_level.h"
+#include "../kernel/util.h"
+#include "screen.h"
 
 // print char on screen at col, row, or at cursor position
 void
