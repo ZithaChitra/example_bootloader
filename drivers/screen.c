@@ -1,4 +1,4 @@
-// screen driver "implementation" file
+//  screen driver "implementation" file
 
 #include "screen.h"
 #include "../kernel/low_level.h"
