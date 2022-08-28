@@ -5,6 +5,12 @@ gdt_null:           ; the mandatory null descriptor
     dd 0x0          ; two 'dd' give us 8 bytes/64 bits which makes 
                     ; up a segment descriptor structure
 
+;***********************************************;
+; IMPORTANT: The first two descriptors are for kernel space
+; i.e Ring 0 privillage
+;***********************************************;
+
+; kernel space code
 gdt_code:           ; the code segment descriptor
     ; base=0x0, limit=0xfffff,
     ; 1st flags: (present)1 (privillage)00 (descriptor type)1 -> 1001b
@@ -17,7 +23,7 @@ gdt_code:           ; the code segment descriptor
     db 11001111b    ; 2nd flags, limit (bits 16 - 19)
     db 0x0          ; base (bits 24 - 32)
 
-
+; kernel space code
 gdt_data:
     ; Same as code segments except for the type flags:
     ; type flags: (code)0 (expand down)0 (writable)1 (accessed)0 -> 0010b
@@ -28,6 +34,35 @@ gdt_data:
     db 11001111b    ; 2nd flags, Limit (bits 16 - 19)
     db 0x0          ; Base (bits 24 - 31) 
 
+
+;***********************************************;
+; IMPORTANT: The next two descriptors are for user space
+; i.e Ring 3 privillage
+;***********************************************;
+
+; User space code
+gdt_user_code:
+    ; base=0x0, limit=0xfffff,
+    ; 1st flags: (present)1 (privillage)11 (descriptor type)1 -> 1001b
+    ; type flags: (code)1 (comforming)0 (readable)1 (accessed)0 -> 1010b
+    ; 2nd flags: (granularity)1 (32-bit default)1 (64-bit seg)0 (AVL)0 -> 1100b
+    dw 0xffff       ; limit (bits 0 - 15)
+    dw 0x0          ; base (bits 0 - 15)
+    dw 0x0          ; Base (bits 16 - 23)
+    db 11111010b    ; 1st flags, type flags   ; access bits are 11b for Ring 3
+    db 11001111b    ; 2nd flags, Limit (bits 16 - 19)
+    db 0x0          ; Base (bits 24 - 31) 
+
+; User space data
+gdt_user_data:
+    ; Same as code segments except for the type flags:
+    ; type flags: (code)0 (expand down)0 (writable)1 (accessed)0 -> 0010b
+    dw 0xffff       ; limit (bits 0 - 15)
+    dw 0            ; base (bits 0 - 15)
+    dw 0            ; Base (bits 16 - 23)
+    db 11110010b    ; 1st flags, type flags    ; access bits are 11b for ring 0
+    db 11001111b    ; 2nd flags, Limit (bits 16 - 19)
+    db 0x0          ; Base (bits 24 - 31) 
 
 
 gdt_end:            ; The reason for putting a label at the end of the 
@@ -52,14 +87,19 @@ gdt_descriptor:
 ; when we set DS=0x10 in PM, the CPU knows that we mean it to use the 
 ; the segment described at offset 0x10 (i.e 16 bytes) in our GDT, which in our 
 ; case is the DATA segment. (0x0 -> null; 0x8 -> CODE; 0x10 -> DATA)
-CODE_SEG equ gdt_code - gdt_start
-DATA_SEG equ gdt_data - gdt_start
+CODE_SEG        equ gdt_code - gdt_start
+DATA_SEG        equ gdt_data - gdt_start
+CODE_SEG_USER   equ gdt_user_code - gdt_start
+DATA_SEG_USER   equ gdt_user_data - gdt_start
 
 
 
 
 
-
+; protected mode use CS to store the Current Privillage Level (CPL).
+; When entering protected mode for the first time, we need to swicth to Ring 0.
+; because the value of CS was invalid (from real mode), we need to choose the
+; correct descriptor from the GDT into CS.
 
 
 
