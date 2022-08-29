@@ -82,6 +82,7 @@ gdt_descriptor:
 
 
 
+
 ; Define some handy constants for the GDT 'segment descriptor' offsets, which 
 ; are what segment registers must constain when in protected mode. For example,
 ; when we set DS=0x10 in PM, the CPU knows that we mean it to use the 
